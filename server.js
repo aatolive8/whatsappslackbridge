@@ -33,4 +33,18 @@ async function sendWhatsApp(to, body) {
 }
 
 app.post('/incoming-whatsapp', async (req, res) => {
-  const from = req.body.From.replace('whatsap
+  try {
+    const from = req.body.From.replace('whatsapp:', '');
+    const msg = req.body.Body;
+
+    await axios.post(SLACK_WEBHOOK_URL, {
+      text: `📩 *Message from ${from}*\n${msg}\n\n_Reply with:_ \`+${from} your reply\``,
+    });
+
+    res.sendStatus(200);
+  } catch (err) {
+    console.error('Error in /incoming-whatsapp:', err);
+    res.sendStatus(500);
+  }
+});
+
